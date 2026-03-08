@@ -30,7 +30,7 @@ class Config:
     PATIENCE: int = 20
     MIN_LR: float = 5e-7
     FIXED_THRESHOLD: float = 0.4
-    INITIAL_LR: float = 2e-5
+    INITIAL_LR: float = 8e-6
     BACKBONE_LR_SCALE: float = 0.1
     WEIGHT_DECAY: float = 2e-4
     DROPOUT_RATE: float = 0.25
