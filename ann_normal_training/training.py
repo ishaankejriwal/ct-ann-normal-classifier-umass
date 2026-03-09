@@ -209,7 +209,7 @@ def assert_and_log_fold(df: pd.DataFrame, train_idx, val_idx, fold: int, label_c
 
     val_share = len(val_df) / len(df)
     val_counts = val_df[label_col].value_counts().to_dict()
-    ann_count = val_counts.get("ANN_1_4", 0)
+    ann_count = val_counts.get("NODULE", 0)
     ann_ratio = ann_count / max(1, len(val_df))
 
     message = (
@@ -235,32 +235,19 @@ def stabilized_training_loop(model, train_loader, val_loader, device: torch.devi
         max_logit=Config.MAX_LOGIT,
     )
 
-    backbone_params = [parameter for parameter in model.cnn.parameters() if parameter.requires_grad]
-    head_modules = [
-        model.feature_norm,
-        model.feature_projection,
-        model.feature_dropout,
-        model.lstm,
-        model.lstm_layer_norm,
-        model.self_attention,
-        model.classifier,
-    ]
-    head_params = [
-        parameter
-        for module in head_modules
-        for parameter in module.parameters()
-        if parameter.requires_grad
-    ]
-
     optimizer = optim.AdamW(
         [
             {
-                "params": backbone_params,
-                "lr": Config.INITIAL_LR * Config.BACKBONE_LR_SCALE,
+                "params": [parameter for _, parameter in model.cnn.named_parameters() if parameter.requires_grad],
+                "lr": Config.INITIAL_LR * 0.1,
                 "weight_decay": Config.WEIGHT_DECAY,
             },
             {
-                "params": head_params,
+                "params": list(model.feature_norm.parameters())
+                + list(model.feature_projection.parameters())
+                + list(model.lstm.parameters())
+                + list(model.self_attention.parameters())
+                + list(model.classifier.parameters()),
                 "lr": Config.INITIAL_LR,
                 "weight_decay": Config.WEIGHT_DECAY,
             },
@@ -482,7 +469,7 @@ def run_cross_validation() -> None:
     logger.info(f"Total samples: {len(df)}")
 
     df = df.sample(frac=1, random_state=42).reset_index(drop=True)
-    label_map = {"NORMAL": 0, "ANN_1_4": 1}
+    label_map = {"NORMAL": 0, "NODULE": 1}
 
     df_orig = df[df["AUGMENT"] == "orig"].reset_index(drop=True) if "AUGMENT" in df.columns else df.copy()
 

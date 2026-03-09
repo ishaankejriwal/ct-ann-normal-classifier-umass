@@ -15,7 +15,7 @@ def downsample_to_equal(df_in: pd.DataFrame, seed: int = 42) -> pd.DataFrame:
     # Downsample classes to equal counts for balanced evaluation.
 
     # Split rows by class to compute the shared target size.
-    ann_df = df_in[df_in["TYPE"] == "ANN_1_4"]
+    ann_df = df_in[df_in["TYPE"] == "NODULE"]
     norm_df = df_in[df_in["TYPE"] == "NORMAL"]
     target = min(len(ann_df), len(norm_df))
     if target == 0:
@@ -173,9 +173,9 @@ def validate_balanced_sampling(train_loader: DataLoader, logger, fold: int, num_
         batch_ann = (labels == 1).sum().item()
         total_normal += batch_normal
         total_ann += batch_ann
-        logger.info(f"Batch {batch_idx + 1}: NORMAL={batch_normal}, ANN_1_4={batch_ann}")
+        logger.info(f"Batch {batch_idx + 1}: NORMAL={batch_normal}, NODULE={batch_ann}")
 
     total = total_normal + total_ann
     balance_ratio = (total_ann / total) if total > 0 else 0.0
-    logger.info(f"[VALIDATION] ANN_1_4 ratio: {balance_ratio:.3f} (target ~0.5).")
+    logger.info(f"[VALIDATION] NODULE ratio: {balance_ratio:.3f} (target ~0.5).")
     return balance_ratio

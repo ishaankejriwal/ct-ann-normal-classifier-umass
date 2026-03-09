@@ -24,7 +24,7 @@ class Config:
     EPOCHS: int = 150
     BATCH_SIZE: int = 8
     NUM_WORKERS: int = 0
-    INCLUDE_CLASSES: tuple[str, str] = ("ANN_1_4", "NORMAL")
+    INCLUDE_CLASSES: tuple[str, str] = ("NODULE", "NORMAL")
 
     # Optimization and stability settings.
     PATIENCE: int = 20
