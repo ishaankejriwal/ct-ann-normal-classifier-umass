@@ -15,6 +15,7 @@ class Config:
 
     # Data and path configuration.
     CSV_PATH: str = "aug.csv"
+    ASSIGNMENTS_CSV_PATH: str = "Scan Assignments.csv"
     FRAME_DIR: str = "preprocessed_frames_aug"
     SAVE_DIR: str = "saved_models"
     LOG_DIR: str = "logs"
@@ -24,7 +25,9 @@ class Config:
     EPOCHS: int = 150
     BATCH_SIZE: int = 8
     NUM_WORKERS: int = 0
-    INCLUDE_CLASSES: tuple[str, str] = ("NODULE", "NORMAL")
+    INCLUDE_CLASSES: tuple[str, str] = ("ANN_1_4", "NORMAL")
+    FAIL_ON_COUNT_MISMATCH: bool = True
+    USE_HFLIP_FOR_TRAIN: bool = False
 
     # Optimization and stability settings.
     PATIENCE: int = 20

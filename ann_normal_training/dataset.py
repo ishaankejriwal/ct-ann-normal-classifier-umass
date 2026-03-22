@@ -11,11 +11,11 @@ from torch.utils.data import DataLoader, Dataset, WeightedRandomSampler
 import torchvision.transforms.functional as TF
 
 
-def downsample_to_equal(df_in: pd.DataFrame, seed: int = 42) -> pd.DataFrame:
+def downsample_to_equal(df_in: pd.DataFrame, positive_label: str, seed: int = 42) -> pd.DataFrame:
     # Downsample classes to equal counts for balanced evaluation.
 
     # Split rows by class to compute the shared target size.
-    ann_df = df_in[df_in["TYPE"] == "NODULE"]
+    ann_df = df_in[df_in["TYPE"] == positive_label]
     norm_df = df_in[df_in["TYPE"] == "NORMAL"]
     target = min(len(ann_df), len(norm_df))
     if target == 0:
@@ -157,7 +157,13 @@ def create_balanced_sampler(df: pd.DataFrame) -> WeightedRandomSampler:
     return WeightedRandomSampler(weights, len(weights), replacement=True)
 
 
-def validate_balanced_sampling(train_loader: DataLoader, logger, fold: int, num_batches_to_check: int = 10) -> float:
+def validate_balanced_sampling(
+    train_loader: DataLoader,
+    logger,
+    fold: int,
+    positive_label: str = "POSITIVE",
+    num_batches_to_check: int = 10,
+) -> float:
     # Log class balance over early batches from the training loader.
 
     # Inspect early batches to verify sampler behavior quickly.
@@ -173,9 +179,9 @@ def validate_balanced_sampling(train_loader: DataLoader, logger, fold: int, num_
         batch_ann = (labels == 1).sum().item()
         total_normal += batch_normal
         total_ann += batch_ann
-        logger.info(f"Batch {batch_idx + 1}: NORMAL={batch_normal}, NODULE={batch_ann}")
+        logger.info(f"Batch {batch_idx + 1}: NORMAL={batch_normal}, {positive_label}={batch_ann}")
 
     total = total_normal + total_ann
     balance_ratio = (total_ann / total) if total > 0 else 0.0
-    logger.info(f"[VALIDATION] NODULE ratio: {balance_ratio:.3f} (target ~0.5).")
+    logger.info(f"[VALIDATION] {positive_label} ratio: {balance_ratio:.3f} (target ~0.5).")
     return balance_ratio

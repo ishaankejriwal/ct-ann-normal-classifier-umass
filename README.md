@@ -4,7 +4,7 @@ PyTorch training pipeline for binary classification of echocardiography video cl
 - NORMAL
 - ANN_1_4
 
-The project uses a stabilized EfficientNet + BiLSTM + attention model, stratified group cross-validation, balanced sampling, detailed metrics, and optional Grad-CAM diagnostics.
+The project uses a stabilized EfficientNet + BiLSTM + attention model, scan-assignment-driven cross-validation, balanced sampling, detailed metrics, and optional Grad-CAM diagnostics.
 
 ## Repository Layout
 
@@ -32,6 +32,7 @@ pip install torch torchvision numpy pandas scikit-learn tqdm opencv-python
 
 The training code expects:
 - Metadata CSV: aug.csv
+- Scan assignment CSV: Scan Assignments.csv
 - Preprocessed frame tensors directory: preprocessed_frames_aug/
 - Frame files as .pt tensors with shape (3, 224, 224)
 
@@ -40,6 +41,14 @@ Expected key columns in aug.csv:
 - VIDEO_NAME: source video name
 - SCAN: scan-level grouping key for leakage-safe CV
 - AUGMENT: augmentation tag (orig, hflip), if available
+
+Expected key columns in Scan Assignments.csv:
+- TYPE: class label (ANN_1_4 or NORMAL)
+- SCAN: scan ID
+- FOLD_GROUP: fold group key (for example A-E)
+- VIDEO_COUNT: expected orig-video count for the scan
+
+During startup, training validates that `VIDEO_COUNT` matches the number of `orig` rows in `aug.csv` for each `(TYPE, SCAN)` pair and then builds folds directly from `FOLD_GROUP`.
 
 ## Configuration
 
