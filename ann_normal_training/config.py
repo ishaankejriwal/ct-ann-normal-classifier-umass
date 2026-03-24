@@ -27,7 +27,7 @@ class Config:
     NUM_WORKERS: int = 0
     INCLUDE_CLASSES: tuple[str, str] = ("ANN_1_4", "NORMAL")
     FAIL_ON_COUNT_MISMATCH: bool = True
-    USE_HFLIP_FOR_TRAIN: bool = False
+    USE_HFLIP_FOR_TRAIN: bool = True
 
     # Optimization and stability settings.
     PATIENCE: int = 20
