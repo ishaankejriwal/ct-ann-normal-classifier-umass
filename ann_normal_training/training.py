@@ -324,7 +324,7 @@ def stabilized_training_loop(model, train_loader, val_loader, device: torch.devi
     criterion = StabilizedFocalLoss(
         alpha=0.48,
         gamma=1.0,
-        label_smoothing=0.02,
+        label_smoothing=0.08,
         temperature=Config.TEMPERATURE,
         max_logit=Config.MAX_LOGIT,
     )
@@ -361,7 +361,7 @@ def stabilized_training_loop(model, train_loader, val_loader, device: torch.devi
     early_stopping = QualityEarlyStopping(
         patience=Config.EARLY_STOPPING_PATIENCE,
         min_precision=0.35,
-        min_specificity=0.35,
+        min_specificity=0.2,
         min_delta=Config.MIN_DELTA,
     )
 

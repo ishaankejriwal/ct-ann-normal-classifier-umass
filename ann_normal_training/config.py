@@ -27,7 +27,7 @@ class Config:
     NUM_WORKERS: int = 0
     INCLUDE_CLASSES: tuple[str, str] = ("ANN_1_4", "NORMAL")
     FAIL_ON_COUNT_MISMATCH: bool = True
-    USE_HFLIP_FOR_TRAIN: bool = True
+    USE_HFLIP_FOR_TRAIN: bool = False
 
     # Optimization and stability settings.
     PATIENCE: int = 20
@@ -37,7 +37,7 @@ class Config:
     BACKBONE_LR_SCALE: float = 0.1
     WEIGHT_DECAY: float = 2e-4
     DROPOUT_RATE: float = 0.25
-    TEMPERATURE: float = 1.5
+    TEMPERATURE: float = 1.0
     MAX_GRAD_NORM: float = 1.0
     ACCUMULATION_STEPS: int = 2
     MAX_LOGIT: float = 8.0
