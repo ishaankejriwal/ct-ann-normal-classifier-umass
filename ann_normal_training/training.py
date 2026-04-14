@@ -177,6 +177,17 @@ def get_positive_label(include_classes: tuple[str, str]) -> str:
     return non_normal[0]
 
 
+def get_train_augments() -> list[str]:
+    # Build the list of train-time pre-generated variants to include.
+
+    augments = ["orig"]
+    if Config.USE_HFLIP_FOR_TRAIN:
+        augments.append("hflip")
+    if Config.USE_VFLIP_FOR_TRAIN:
+        augments.append("vflip")
+    return augments
+
+
 def canonical_video_root(video_name: str) -> str:
     # Remove extension and known augmentation suffixes.
 
@@ -541,7 +552,8 @@ def run_cross_validation() -> None:
     logger.info("TRAINING CONFIGURATION")
     logger.info(
         "- Augmentations: dynamic train-time sequence aug disabled; "
-        f"using pre-generated variants (train includes hflip={Config.USE_HFLIP_FOR_TRAIN})"
+        "using pre-generated variants "
+        f"(train includes hflip={Config.USE_HFLIP_FOR_TRAIN}, vflip={Config.USE_VFLIP_FOR_TRAIN})"
     )
     logger.info("- Training sampling: balanced via WeightedRandomSampler")
     logger.info("- Validation sampling: balanced via downsampling")
@@ -625,7 +637,7 @@ def run_cross_validation() -> None:
 
         if "AUGMENT" in df.columns:
             # Use configurable train augment variants and orig-only for validation.
-            train_augments = ["orig", "hflip"] if Config.USE_HFLIP_FOR_TRAIN else ["orig"]
+            train_augments = get_train_augments()
             train_df = df[(df["SCAN"].isin(train_scans)) & (df["AUGMENT"].isin(train_augments))].reset_index(drop=True)
             val_df = df[(df["SCAN"].isin(val_scans)) & (df["AUGMENT"] == "orig")].reset_index(drop=True)
         else:
